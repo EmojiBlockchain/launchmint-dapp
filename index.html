@@ -1,0 +1,273 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaunchMint - Create Your Token</title>
+
+  <!-- MetaMask (Web3) -->
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Your main.js -->
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #0d0d1f, #1a1a40);
+      font-family: 'Poppins', sans-serif;
+      color: #E0E0E0;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      padding: 15px 30px;
+      background: rgba(0, 0, 0, 0.4);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    #connect-evm-btn {
+      background-color: #9B59B6;
+      color: white;
+    }
+
+    #connect-evm-btn:hover {
+      background-color: #b66ee0;
+    }
+
+    h1 {
+      margin-top: 20px;
+      font-size: 2.5rem;
+      color: #00FFFF;
+      text-shadow: 0 0 10px #00FFFF;
+      text-align: center;
+    }
+
+    h3 {
+      font-weight: 300;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #9B59B6;
+    }
+
+    .card {
+      position: absolute;
+      margin-top: 250px;
+      width: 95%;
+      max-width: 500px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+      visibility: hidden;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    input::placeholder {
+      color: #bbb;
+    }
+
+    #create-token-btn {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 1rem;
+      border-radius: 12px;
+      font-weight: bold;
+      background-color: #00FFFF;
+      color: #0d0d1f;
+    }
+
+    #create-token-btn:hover {
+      background-color: #00FF9D;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #bbb;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header with Connect Button -->
+  <header>
+    <button id="connect-evm-btn">Connect MetaMask</button>
+  </header>
+
+  <!-- Left Top: How to Create + Social Icons -->
+  <div style="position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 12px; z-index: 1000;">
+    <!-- How to Create Button -->
+    <button onclick="toggleAboutBox()" style="
+      padding: 10px 16px;
+      background-color: #00d0ff;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    ">
+      📘 How to Create
+    </button>
+
+    <!-- Telegram Icon -->
+    <a href="https://t.me/LaunchMintOfficial" target="_blank" style="
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: #229ED9;
+      border-radius: 50%;
+      text-decoration: none;
+      color: white;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    " title="Join Telegram">✈️</a>
+
+
+    <!-- Twitter Icon -->
+    <a href="https://x.com/LaunchMintApp" target="_blank" style="
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: #1DA1F2;
+      border-radius: 50%;
+      text-decoration: none;
+      color: white;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    " title="Follow us on Twitter (X)">🐦</a>
+
+  </div>
+
+  <!-- About Box -->
+  <div id="about-box" style="
+    display: none;
+    position: absolute; 
+    top: 70px; 
+    left: 20px; 
+    max-width: 320px; 
+    background: linear-gradient(135deg, #1e1e1e, #2c2c2c); 
+    color: #f0f0f0; 
+    padding: 18px 20px; 
+    border-radius: 16px; 
+    font-family: 'Segoe UI', sans-serif; 
+    font-size: 14px; 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); 
+    z-index: 999; 
+    transition: opacity 0.3s ease-in-out;
+  ">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin: 0; font-size: 17px; font-weight: 600; color: #00d0ff;">🚀 About LaunchMint</h3>
+      <span onclick="document.getElementById('about-box').style.display='none';" 
+        style="cursor: pointer; font-weight: bold; color: #ccc; font-size: 18px; transition: color 0.2s;"
+        onmouseover="this.style.color='#f66'" 
+        onmouseout="this.style.color='#ccc'"
+      >✖</span>
+    </div>
+    <p style="margin: 12px 0 6px 0; line-height: 1.5;">
+      Create your own ERC20 token on any EVM-compatible blockchain like Ethereum or BNB Smart Chain.
+    </p>
+    <p style="margin: 0 0 6px 0; line-height: 1.5;">
+      Just connect MetaMask, enter your token details, and deploy in seconds.
+    </p>
+    <p style="margin: 0 0 12px 0; line-height: 1.5;">
+      No coding. No login. You only pay the <strong style="color:#ffcc00;">gas fee</strong> <span style="color:#888;">+</span> <strong style="color:#00ff99;">a small LaunchMint fee</strong>.
+    </p>
+    <div style="margin-top: 12px; padding: 10px; background: #2e2e2e; border-radius: 12px;">
+      <strong style="color:#00d0ff;">💡 Testnet Tip:</strong>
+      <p style="margin: 6px 0 0 0; line-height: 1.4;">
+        Use a testnet like <strong>Goerli</strong>, <strong>Sepolia</strong>, or <strong>BSC Testnet</strong> to try LaunchMint without spending real ETH/BNB.
+        <br />
+        <a href="https://faucet.quicknode.com/" target="_blank" style="color:#00ffcc; text-decoration: underline;">Get free testnet tokens</a>
+      </p>
+    </div>
+  </div>
+
+  <h1>🚀 LaunchMint 🚀</h1>
+  <h3>Create Your Token Instantly on EVM Blockchains</h3>
+
+  <!-- EVM Section -->
+  <div class="card" id="evm-section" style="visibility: hidden;">
+    <p id="wallet-address">👛 Wallet: Not connected</p>
+    <p id="network-status">🛡️ Network: Not connected</p>
+    <p id="balance-status">💰 Balance: 0</p>
+    <p id="gas-status">⛽ Gas Price: Loading...</p>
+    <p id="launchmint-fee-status">🎟️ LaunchMint Fee: Loading...</p>
+    <hr />
+    <input type="text" id="tokenName" placeholder="Token Name" />
+    <input type="text" id="tokenSymbol" placeholder="Token Symbol" />
+    <input type="number" id="totalSupply" placeholder="Total Supply" min="1" max="4000000000000000" />
+    <small style="color: #aaa;">Max supply: 4,000,000,000,000,000 tokens</small>
+    <input type="number" id="decimals" value="18" placeholder="Decimals" />
+    <button id="create-token-btn" disabled>Create Token</button> 
+  </div>
+
+  <footer>
+    Powered by 🚀 <strong>LaunchMint</strong> © 2025 | All rights reserved.
+  </footer>
+
+  <!-- MetaMask Detector -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const metamask = typeof window.ethereum !== 'undefined';
+      if (!metamask) {
+        document.getElementById("connect-evm-btn").style.display = "none";
+      }
+    });
+
+    function toggleAboutBox() {
+      const box = document.getElementById("about-box");
+      if (box.style.display === "none" || box.style.display === "") {
+        box.style.display = "block";
+      } else {
+        box.style.display = "none";
+      }
+    }
+  </script>
+</body>
